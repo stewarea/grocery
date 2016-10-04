@@ -15,6 +15,8 @@
     use Symfony\Component\Debug\Debug;
     Debug::enable();
 
+    // use Symfony\Component\HttpFoundation\Session;
+
     use Symfony\Component\HttpFoundation\Request;  Request::enableHttpMethodParameterOverride();
     use Dompdf\Dompdf;
     // session_start();
@@ -30,6 +32,7 @@
     //     $purchase_price = $cart_item['price'];
     //     $purchase_subtotal = $purchase_quantity * $purchase_price;
     // }
+    session_start();
 
     $app = new Silex\Application();
 
@@ -67,6 +70,38 @@
       return $app['twig']->render('order.html.twig', array('orders' => Order::getAll()));
     });
 
+    $app->get("/cart", function () use ($app){
+         $newOrder = Order::find($_SESSION['order_id']);
+         if($newOrder) $cart = $newOrder->getCart();
+           else $cart = null;
+
+         return $app['twig']->render('cart.html.twig', array('cart' => $cart));
+   });
+
+
+    $app->post("/cart", function () use ($app){
+      $product = Product::find($_POST['product_id']);
+      $product->setPurchaseQuantity($_POST['quantity']);
+
+      if(!empty($_SESSION['order_id'])) $newOrder = Order::find($_SESSION['order_id']);
+      else $newOrder = new Order(null, $_SESSION['user_id']);
+
+      $newOrder->addProductToCart($product);
+      $newOrder->save();
+
+      $_SESSION['order_id'] = $newOder->id;
+ });
+
+
+
+    $app->post('login/', function () use ($app){
+        $row = ['DB']->query("SELECT * FROM users WHERE email = {$_POST['email']} AND password = '{$_POST['password']}';");
+        if($row) {
+            // Store logged in user in session
+            $_SESSION['user_id'] = $row->id;
+            return $app['twig']->render('home.html.twig', array('orders' => Order::getAll()));
+        }
+    });
     // $app->post("/", function() use ($app) {
     //     $new_Stylist = new Stylist(null, $_POST['name'], $_POST['date_began'], $_POST['specialty']);
     //     $new_Stylist->save();

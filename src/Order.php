@@ -31,6 +31,10 @@
         {
             return $this->cart;
         }
+        function setCart($cart) {
+
+            $this->cart = $cart;
+        }
 
         function getOrderDate()
         {
@@ -59,9 +63,10 @@
     //essentially, this save function is only used when writing to databse at checkout. it wil have  the total and "cart" will be a link to a text file of the receipt/invoice, may be renamed "checkout"?
         function save()
         {
-            $GLOBALS['DB']->exec("INSERT INTO orders (user_id, order_date, delivery_date_time, total) VALUES (
+            $GLOBALS['DB']->exec("INSERT INTO orders (user_id, order_date, products, delivery_date_time, total) VALUES (
                 {$this->getUserId()},
                 '{$this->getOrderDate()}',
+                serialize($this->getCart), 
                 '{$this->getDeliveryDateTime()}',
                 '{$this->getTotal()}'
                 );");
@@ -107,6 +112,8 @@
         // }
 
 //static methods
+
+
         static function getAll()
         {
             $returned_orders = $GLOBALS['DB']->query("SELECT * FROM orders");
@@ -133,6 +140,7 @@
             foreach($returned_orders as $order) {
                 if($order->getId() == $search_id) {
                     $found_order = $order;
+                    $found_order->setCart(unserialize($order->products));
                 }
             }
             return $found_order;

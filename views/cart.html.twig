@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shopping Cart</title>
+    </head>
+    <body>
+        <div class="cart">
+            <h3>Cart Items:</h3>
+            {% if cart is not empty %}
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h3>Name</h3>
+                    </div>
+                    <div class="col-sm-2">
+                        <h3>Price</h3>
+                    </div>
+                    <div class="col-sm-2">
+                        <h3>Quantity</h3>
+                    </div>
+                    <div class="col-sm-4">
+                        <h3>Total</h3>
+                    </div>
+                </div>
+                {% for product in cart %}
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <a href="/product_details/{{ product.getId }}">{{ product.getName }}</a>
+                        </div>
+                        <div class="col-sm-2">
+                            {{ product.getPrice }}
+                        </div>
+                        <div class="col-sm-2">
+                            {{ product.getPurchaseQuantity }}
+                        </div>
+                        <div class="col-sm-4">
+                        		{{ product.calculateProductPrice }}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+        </div>
+    </body>
+</html>

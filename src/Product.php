@@ -183,6 +183,22 @@
                 return $this->getPrice() * $this->getPurchaseQuantity();
             // }
         }
+
+        function getProductsInCart()
+        $returned_products = $GLOBAL['DB']->("SELECT * FROM products WHERE id={$this.getId()}")
+        $cart = array();
+        foreach($returned_products as $product) {
+            $name = $product['name'];
+            $price =['price'];
+            $purchase_quantity = $product['purchase_quantity'];
+            $inventory = $product['inventory'];
+            $category = $product['category'];
+            $photo = $product['photo'];
+            $id = $product['id'];
+            $new_product = new Product($name, $price, $puchase, $invetory, $category, $photo, $id);
+            array_push($cart, $new_prouct);
+        }
+        return $cart;
     }
 
 ?>
